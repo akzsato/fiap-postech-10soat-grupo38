@@ -323,7 +323,7 @@ Então a porta criada foi a 52464 neste caso. Assim a URL para acessar o Swagger
 ### Links de Referência
 
 - Repositório de Trabalho:
-    - [techChallenge26](https://github.com/akzsato/fiap-postech-10soat-grupo38)
+    - [FIAP PosTech - 10SOAT - Grupo 38](https://github.com/akzsato/fiap-postech-10soat-grupo38)
 
 - Vídeo:
     - [Grupo 38 - Fase 2](https://youtu.be/HAM7cF1T)
