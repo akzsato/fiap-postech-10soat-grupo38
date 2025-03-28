@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: app
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: app
+  template:
+    metadata:
+      labels:
+        service: app
+    spec:
+      containers:
+        - env:
+            - name: ACCESS_TOKEN_EXPIRY_HOUR
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCESS_TOKEN_EXPIRY_HOUR
+                  name: app-env
+            - name: ACCESS_TOKEN_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCESS_TOKEN_SECRET
+                  name: app-env
+            - name: APP_ENV
+              valueFrom:
+                configMapKeyRef:
+                  key: APP_ENV
+                  name: app-env
+            - name: CONTEXT_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: CONTEXT_TIMEOUT
+                  name: app-env
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_HOST
+                  name: app-env
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_NAME
+                  name: app-env
+            - name: DB_PASS
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PASS
+                  name: app-env
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PORT
+                  name: app-env
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_USER
+                  name: app-env
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: PORT
+                  name: app-env
+            - name: REDIS_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_ADDRESS
+                  name: app-env
+            - name: REFRESH_TOKEN_EXPIRY_HOUR
+              valueFrom:
+                configMapKeyRef:
+                  key: REFRESH_TOKEN_EXPIRY_HOUR
+                  name: app-env
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: REFRESH_TOKEN_SECRET
+                  name: app-env
+            - name: SERVER_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  key: SERVER_ADDRESS
+                  name: app-env
+          image: akzsato/app
+          name: app
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      hostname: app
+      restartPolicy: Always

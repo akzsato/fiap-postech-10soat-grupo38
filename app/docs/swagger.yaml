@@ -1,0 +1,668 @@
+basePath: /
+definitions:
+  entities.AcompanhamentoPedido:
+    properties:
+      id:
+        type: string
+      pedidos:
+        $ref: '#/definitions/entities.FilaPedidos'
+      tempoEstimado:
+        $ref: '#/definitions/time.Duration'
+      ultimaAtualizacao:
+        type: string
+    type: object
+  entities.CatProduto:
+    enum:
+    - Lanche
+    - Acompanhamento
+    - Bebida
+    - Sobremesa
+    type: string
+    x-enum-varnames:
+    - Lanche
+    - Acompanhamento
+    - Bebida
+    - Sobremesa
+  entities.Cliente:
+    properties:
+      cpf:
+        type: string
+      email:
+        type: string
+      nome:
+        type: string
+    type: object
+  entities.FilaPedidos:
+    properties:
+      pedidos:
+        items:
+          $ref: '#/definitions/entities.Pedido'
+        type: array
+    type: object
+  entities.Pagamento:
+    properties:
+      dataCriacao:
+        type: string
+      idPagamento:
+        type: string
+      status:
+        type: string
+      valor:
+        type: string
+    type: object
+  entities.Pedido:
+    properties:
+      cliente:
+        $ref: '#/definitions/entities.Cliente'
+      identificacao:
+        type: string
+      personalizacao:
+        type: string
+      produtos:
+        items:
+          $ref: '#/definitions/entities.Produto'
+        type: array
+      status:
+        $ref: '#/definitions/entities.StatusPedido'
+      statusPagamento:
+        type: string
+      timeStamp:
+        format: date-time
+        type: string
+      total:
+        type: number
+      ultimaAtualizacao:
+        format: date-time
+        type: string
+    type: object
+  entities.Produto:
+    properties:
+      categoria:
+        $ref: '#/definitions/entities.CatProduto'
+      descricao:
+        type: string
+      identificacao:
+        type: string
+      nome:
+        type: string
+      preco:
+        type: number
+    type: object
+  entities.StatusPedido:
+    enum:
+    - Pendente
+    - Recebido
+    - Em preparação
+    - Pronto
+    - Finalizado
+    type: string
+    x-enum-varnames:
+    - Pendente
+    - Recebido
+    - EmPreparacao
+    - Pronto
+    - Finalizado
+  presenters.AcompanhamentoDTO:
+    properties:
+      id:
+        type: string
+      pedidos:
+        items:
+          $ref: '#/definitions/presenters.PedidoDTO'
+        type: array
+      tempoEstimado:
+        description: in minutes
+        type: integer
+    type: object
+  presenters.PedidoDTO:
+    properties:
+      id:
+        type: string
+      identificacao:
+        type: string
+      status:
+        $ref: '#/definitions/entities.StatusPedido'
+      tempoEstimado:
+        $ref: '#/definitions/time.Duration'
+    type: object
+  response.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  response.SuccessResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  time.Duration:
+    enum:
+    - -9223372036854775808
+    - 9223372036854775807
+    - 1
+    - 1000
+    - 1000000
+    - 1000000000
+    - 60000000000
+    - 3600000000000
+    type: integer
+    x-enum-varnames:
+    - minDuration
+    - maxDuration
+    - Nanosecond
+    - Microsecond
+    - Millisecond
+    - Second
+    - Minute
+    - Hour
+host: localhost:8080
+info:
+  contact: {}
+  description: API para o Tech Challenge 2 da FIAP - SOAT
+  title: Lanchonete API - Tech Challenge 2
+  version: "1.0"
+paths:
+  /acompanhamento:
+    post:
+      consumes:
+      - application/json
+      description: Cria um acompanhamento
+      parameters:
+      - description: Acompanhamento
+        in: body
+        name: acompanhamento
+        required: true
+        schema:
+          $ref: '#/definitions/entities.AcompanhamentoPedido'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Cria um acompanhamento
+      tags:
+      - acompanhamento
+  /acompanhamento/{ID}:
+    get:
+      consumes:
+      - application/json
+      description: Busca um pedido
+      parameters:
+      - description: ID do pedido
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AcompanhamentoPedido'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Busca um pedido
+      tags:
+      - acompanhamento
+  /acompanhamento/{IDAcompanhamento}/{IDPedido}:
+    post:
+      consumes:
+      - application/json
+      description: Adiciona um pedido existente ao acompanhamento de pedidos
+      parameters:
+      - description: ID do acompanhamento
+        in: path
+        name: IDAcompanhamento
+        required: true
+        type: string
+      - description: ID do pedido
+        in: path
+        name: IDPedido
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Pedido ou acompanhamento não encontrado
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Adiciona um pedido ao acompanhamento
+      tags:
+      - acompanhamento
+  /acompanhamento/{IDAcompanhamento}/{IDPedido}/{status}:
+    put:
+      consumes:
+      - application/json
+      description: Atualiza o status de um pedido
+      parameters:
+      - description: ID do acompanhamento
+        in: path
+        name: IDAcompanhamento
+        required: true
+        type: string
+      - description: ID do pedido
+        in: path
+        name: IDPedido
+        required: true
+        type: string
+      - description: Novo status
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Atualiza o status de um pedido
+      tags:
+      - acompanhamento
+  /acompanhamento/show:
+    get:
+      consumes:
+      - application/json
+      description: Busca um acompanhamento
+      parameters:
+      - description: ID do acompanhamento
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenters.AcompanhamentoDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Busca um acompanhamento
+      tags:
+      - acompanhamento
+  /cliente:
+    post:
+      consumes:
+      - application/json
+      description: Cria um cliente
+      parameters:
+      - description: Cliente
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Cliente'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Cria um cliente
+      tags:
+      - cliente
+  /cliente/{CPF}:
+    get:
+      consumes:
+      - application/json
+      description: Busca um cliente
+      parameters:
+      - description: CPF do cliente
+        in: path
+        name: CPF
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Cliente'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Busca um cliente
+      tags:
+      - cliente
+  /pagamento:
+    post:
+      consumes:
+      - application/json
+      description: Envia o pagamento para o webhook
+      parameters:
+      - description: Pagamento
+        in: body
+        name: pagamento
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Pagamento'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Envia o pagamento para o webhook
+      tags:
+      - pagamento
+  /pagamento/confirmar:
+    post:
+      consumes:
+      - application/json
+      description: Confirma o pagamento
+      parameters:
+      - description: Pagamento
+        in: body
+        name: pagamento
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Pagamento'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Confirma o pagamento
+      tags:
+      - pagamento
+  /pedidos:
+    post:
+      consumes:
+      - application/json
+      description: Cria um pedido
+      parameters:
+      - description: Pedido
+        in: body
+        name: pedido
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Pedido'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Cria um pedido
+      tags:
+      - pedido
+  /pedidos/{ID}:
+    get:
+      consumes:
+      - application/json
+      description: Busca um pedido
+      parameters:
+      - description: Número do pedido
+        in: path
+        name: ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Pedido'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Busca um pedido
+      tags:
+      - pedido
+  /pedidos/{nroPedido}/status/{status}:
+    put:
+      consumes:
+      - application/json
+      description: Atualizar um pedido
+      parameters:
+      - description: Número do pedido
+        in: path
+        name: nroPedido
+        required: true
+        type: string
+      - description: Novo Status do pedido
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Pedido'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Atualiza um pedido a partir de sua Identificação
+      tags:
+      - pedido
+  /pedidos/listartodos:
+    post:
+      consumes:
+      - application/json
+      description: Lista todos os pedidos presentes no banco
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Pedido'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Lista todos os pedidos no banco
+      tags:
+      - pedido
+  /produto:
+    post:
+      consumes:
+      - application/json
+      description: Cria um produto
+      parameters:
+      - description: Produto
+        in: body
+        name: produto
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Produto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Cria um produto
+      tags:
+      - produto
+  /produto/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove um produto
+      parameters:
+      - description: id do produto
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Remove um produto
+      tags:
+      - produto
+    get:
+      consumes:
+      - application/json
+      description: Busca um produto
+      parameters:
+      - description: id do produto
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Produto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Busca um produto
+      tags:
+      - produto
+  /produto/editar:
+    post:
+      consumes:
+      - application/json
+      description: Edita um produto
+      parameters:
+      - description: Produto
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Produto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Edita um produto
+      tags:
+      - produto
+  /produtos:
+    get:
+      consumes:
+      - application/json
+      description: Lista todos os produtos cadastrados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Produto'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Lista todos os produtos no banco
+      tags:
+      - produto
+  /produtos/{categoria}:
+    get:
+      consumes:
+      - application/json
+      description: Lista todos os produtos por categoria
+      parameters:
+      - description: Categoria de produtos
+        in: path
+        name: categoria
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Produto'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Lista os produtos por categoria
+      tags:
+      - produto
+swagger: "2.0"

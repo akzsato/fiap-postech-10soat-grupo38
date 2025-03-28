@@ -1,0 +1,21 @@
+apiVersion: v1
+data:
+  ACCESS_TOKEN_EXPIRY_HOUR: "2"
+  ACCESS_TOKEN_SECRET: access_token_secret
+  APP_ENV: development
+  CONTEXT_TIMEOUT: "2"
+  DB_HOST: mongodb
+  DB_NAME: lanchonete
+  DB_PASS: ""
+  DB_PORT: "27017"
+  DB_USER: ""
+  PORT: "8080"
+  REDIS_ADDRESS: redis:6379
+  REFRESH_TOKEN_EXPIRY_HOUR: "168"
+  REFRESH_TOKEN_SECRET: refresh_token_secret
+  SERVER_ADDRESS: :8080
+kind: ConfigMap
+metadata:
+  labels:
+    service: app-app-env
+  name: app-env

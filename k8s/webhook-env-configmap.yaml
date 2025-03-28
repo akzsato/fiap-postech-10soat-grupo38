@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  REDIS_ADDRESS: redis:6379
+kind: ConfigMap
+metadata:
+  labels:
+    service: webhook-webhook-env
+  name: webhook-env

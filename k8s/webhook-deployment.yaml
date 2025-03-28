@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: webhook
+  name: webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: webhook
+  template:
+    metadata:
+      labels:
+        service: webhook
+    spec:
+      containers:
+        - env:
+            - name: REDIS_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  key: REDIS_ADDRESS
+                  name: webhook-env
+          image: akzsato/webhook
+          name: webhook
+      hostname: webhook
+      restartPolicy: Always
